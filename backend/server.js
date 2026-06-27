@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
@@ -6,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -18,26 +19,26 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 const dbConfig = {
-  host: 'localhost',
-  user: 'root',
-  password: 'gullygang123!',
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT) || 4000,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME || 'fastag_db',
+  ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true },
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 };
 
 let pool;
 
 async function initDB() {
   try {
-    const connection = await mysql.createConnection(dbConfig);
-    await connection.query('CREATE DATABASE IF NOT EXISTS fastag_db');
-    await connection.query('USE fastag_db');
-    
-    pool = mysql.createPool({
-      ...dbConfig,
-      database: 'fastag_db',
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0
-    });
+    pool = mysql.createPool(dbConfig);
+
+    // Create database if not exists
+    await pool.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME || 'fastag_db'}\``);
+    await pool.query(`USE \`${process.env.DB_NAME || 'fastag_db'}\``);
 
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS applications (
@@ -61,18 +62,13 @@ async function initDB() {
         vehicleFront VARCHAR(255),
         vehicleSide VARCHAR(255),
         tagImage VARCHAR(255),
+        status VARCHAR(20) DEFAULT 'Pending',
         submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `;
     await pool.query(createTableQuery);
 
-    try {
-      await pool.query('ALTER TABLE applications ADD COLUMN status VARCHAR(20) DEFAULT "Pending"');
-    } catch (e) {
-      // Ignore if column already exists
-    }
-
-    console.log('Database connected and table ready.');
+    console.log('TiDB connected and table ready.');
   } catch (err) {
     console.error('DB Init Error:', err.message);
   }
@@ -110,7 +106,7 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
   try {
     if (!pool) return res.status(500).json({ error: 'DB not ready' });
 
-    let bodyData = req.body;
+    const bodyData = req.body;
 
     const filePaths = {
       panFile: req.files['panFile'] ? req.files['panFile'][0].filename : null,
@@ -129,13 +125,15 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    // To handle chassis parts gracefully if they somehow came joined or separate
     let chassis = bodyData.chassisNumber || (bodyData.chassisP1 ? `${bodyData.chassisP1}-${bodyData.chassisP2}-${bodyData.chassisP3}` : '');
 
     const values = [
-      bodyData.mobile, bodyData.pan, bodyData.panName, bodyData.dob, bodyData.vehicleType, bodyData.vehicleNumber, bodyData.vcType,
-      chassis, bodyData.engineNumber, bodyData.ownerName, bodyData.fuelType, bodyData.stateOfRegistration, bodyData.pincode,
-      filePaths.panFile, filePaths.rcFront, filePaths.rcBack, filePaths.vehicleFront, filePaths.vehicleSide, filePaths.tagImage
+      bodyData.mobile, bodyData.pan, bodyData.panName, bodyData.dob,
+      bodyData.vehicleType, bodyData.vehicleNumber, bodyData.vcType,
+      chassis, bodyData.engineNumber, bodyData.ownerName,
+      bodyData.fuelType, bodyData.stateOfRegistration, bodyData.pincode,
+      filePaths.panFile, filePaths.rcFront, filePaths.rcBack,
+      filePaths.vehicleFront, filePaths.vehicleSide, filePaths.tagImage
     ];
 
     const [result] = await pool.query(q, values);
@@ -159,4 +157,4 @@ app.put('/api/applications/:id/status', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Backend parsing data properly on : ${PORT}`));
+app.listen(PORT, () => console.log(`Backend running on port: ${PORT}`));
