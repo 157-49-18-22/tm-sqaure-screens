@@ -172,7 +172,8 @@ function Step3({ formData, onSubmit, onBack }) {
         if (files[key]) dbData.append(key, files[key]);
       });
 
-      const res = await fetch('http://localhost:5000/api/applications', {
+      const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${API_BASE}/api/applications`, {
         method: 'POST',
         body: dbData
       });
