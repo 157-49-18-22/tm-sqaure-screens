@@ -15,7 +15,8 @@ const StatCard = ({ icon, label, value, color }) => (
 function ApplicationModal({ app, onClose, onRefresh }) {
   if (!app) return null;
 
-  const backendUrl = 'http://localhost:5000/uploads/';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const backendUrl = `${API_BASE}/uploads/`;
   const images = [
     { label: 'PAN Card', file: app.panFile },
     { label: 'RC Front', file: app.rcFront },
@@ -27,7 +28,7 @@ function ApplicationModal({ app, onClose, onRefresh }) {
 
   const handleUpdateStatus = async (newStatus) => {
     try {
-      await fetch(`http://localhost:5000/api/applications/${app.id}/status`, {
+      await fetch(`${API_BASE}/api/applications/${app.id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -142,7 +143,8 @@ function Dashboard({ onNewForm }) {
   const [selectedApp, setSelectedApp] = useState(null);
 
   const loadData = () => {
-    fetch('http://localhost:5000/api/applications')
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    fetch(`${API_BASE}/api/applications`)
       .then(res => res.json())
       .then(data => setSubmissions(data))
       .catch(console.error);
