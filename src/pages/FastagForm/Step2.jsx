@@ -9,6 +9,23 @@ const vehicleDescriptors = [
   'DI-METHYL ETHER', 'FUEL CELL HYDROGEN', 'PURE EV', 'STRONG HYBRID EV', 'PLUG-IN HYBRID EV',
   'NOT APPLICABLE', 'PETROL/CNG', 'ELECTRIC(BOV)', 'PETROL/LPG', 'CNG ONLY', 'LPG ONLY', 'SOLAR', 'PETROL/HYBRID'
 ];
+const vehicleClasses = [
+  { value: 'VC4', label: 'VC4 - Car,Jeep,Van' },
+  { value: 'VC20', label: 'VC20 - Light Commercial Vehicle' },
+  { value: 'VC5', label: 'VC5 - Light Commercial Vehicle' },
+  { value: 'VC9', label: 'VC9 - Minibus 2 Axle' },
+  { value: 'VC6', label: 'VC6 - Light commercial vehicle 3 Axle' },
+  { value: 'VC8', label: 'VC8 - Bus 3 Axle' },
+  { value: 'VC11', label: 'VC11 - Truck 3 Axle' },
+  { value: 'VC7', label: 'VC7 - Bus 2 Axle' },
+  { value: 'VC10', label: 'VC10 - Truck 2 Axle' },
+  { value: 'VC12', label: 'VC12 - Truck 4 Axle' },
+  { value: 'VC13', label: 'VC13 - Truck 5 Axle' },
+  { value: 'VC14', label: 'VC14 - Truck 6 Axle' },
+  { value: 'VC15', label: 'VC15 - Truck Multi Axle 7 & above' },
+  { value: 'VC16', label: 'VC16 - Earth moving machinery' },
+  { value: 'VC17', label: 'VC17 - Heavy Construction m' }
+];
 
 function InputField({ icon, label, type = 'text', value, onChange, placeholder, maxLength }) {
   return (
@@ -30,7 +47,7 @@ function SelectField({ icon, label, value, onChange, options, placeholder }) {
       <div className="input-wrap select-wrap">
         <select value={value} onChange={onChange} className={`form-select ${value ? 'has-value' : ''}`} id={label}>
           <option value="">{placeholder}</option>
-          {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+          {options.map(opt => <option key={opt.value || opt} value={opt.value || opt}>{opt.label || opt}</option>)}
         </select>
         <div className="select-arrow">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -202,7 +219,7 @@ function Step2({ formData, onNext, onBack }) {
               <SelectField icon={<HashIcon />} label="barcode" value={form.barcode} onChange={set('barcode')} options={['Available', 'Not Available', 'Type A', 'Type B']} placeholder="Barcode Type" />
             </div>
             <div className="field-wrapper">
-              <SelectField icon={<CarIcon />} label="isCommercial" value={form.isCommercial} onChange={set('isCommercial')} options={['Yes', 'No']} placeholder="Commercial Vehicle?" />
+              <SelectField icon={<CarIcon />} label="isCommercial" value={form.isCommercial} onChange={set('isCommercial')} options={vehicleClasses} placeholder="Vehicle Class" />
             </div>
           </div>
         </section>
