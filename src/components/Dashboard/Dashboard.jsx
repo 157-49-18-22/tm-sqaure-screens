@@ -186,6 +186,17 @@ function Dashboard({ onNewForm }) {
       .catch(console.error);
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this application?')) return;
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      await fetch(`${API_BASE}/api/applications/${id}`, { method: 'DELETE' });
+      loadData();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -294,7 +305,15 @@ function Dashboard({ onNewForm }) {
                       </span>
                     </td>
                     <td>
-                      <button className="btn-view" onClick={() => setSelectedApp(s)}>View Details</button>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button className="btn-view" onClick={() => setSelectedApp(s)}>View Details</button>
+                        <button className="btn-delete" onClick={() => handleDelete(s.id)}
+                          title="Delete">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
