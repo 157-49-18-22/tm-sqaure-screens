@@ -216,7 +216,7 @@ function Step2({ formData, onNext, onBack }) {
               <SelectField icon={<ListIcon />} label="vehicleDescriptor" value={form.vehicleDescriptor} onChange={set('vehicleDescriptor')} options={vehicleDescriptors} placeholder="Vehicle Descriptor" />
             </div>
             <div className="field-wrapper">
-              <SelectField icon={<HashIcon />} label="barcode" value={form.barcode} onChange={set('barcode')} options={['Available', 'Not Available', 'Type A', 'Type B']} placeholder="Barcode Type" />
+              <InputField icon={<HashIcon />} label="barcode" placeholder="Barcode (any number/text)" value={form.barcode} onChange={set('barcode')} maxLength={50} />
             </div>
             <div className="field-wrapper">
               <SelectField icon={<CarIcon />} label="isCommercial" value={form.isCommercial} onChange={set('isCommercial')} options={vehicleClasses} placeholder="Vehicle Class" />
