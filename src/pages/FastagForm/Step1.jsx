@@ -47,12 +47,13 @@ function Step1({ onNext, onBack }) {
   const [form, setForm] = useState({
     mobile: '', pan: '', panName: '', dob: '',
     vehicleType: '', vehicleNumber: '', vcType: '',
-    chassisP1: '', chassisP2: '', chassisP3: '',
+    chassisNumber: '',
   });
   const [panFile, setPanFile] = useState(null);
   const [panPreview, setPanPreview] = useState(null);
   const [errors, setErrors] = useState({});
   const [dragOver, setDragOver] = useState(false);
+  const [copied, setCopied] = useState(false);
   const fileRef = useRef();
 
   const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
@@ -124,6 +125,16 @@ function Step1({ onNext, onBack }) {
   const HashIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>
+    </svg>
+  );
+  const CopyIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+  );
+  const CheckIcon = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
   );
 
@@ -205,17 +216,43 @@ function Step1({ onNext, onBack }) {
               {errors.vcType && <span className="field-error">{errors.vcType}</span>}
             </div>
             <div className="field-wrapper">
-              <div className="input-group">
+              <div className="input-group" style={{ position: 'relative' }}>
                 <div className="input-icon"><HashIcon /></div>
-                <div className="chassis-split">
-                  <input className="form-input chassis-input" type="text" placeholder="Part 1" value={form.chassisP1} onChange={set('chassisP1')} maxLength={6} />
-                  <span className="chassis-sep">—</span>
-                  <input className="form-input chassis-input" type="text" placeholder="Part 2" value={form.chassisP2} onChange={set('chassisP2')} maxLength={3} />
-                  <span className="chassis-sep">—</span>
-                  <input className="form-input chassis-input" type="text" placeholder="Part 3" value={form.chassisP3} onChange={set('chassisP3')} maxLength={7} />
+                <div className="input-wrap">
+                  <input
+                    className="form-input"
+                    type="text"
+                    placeholder=" "
+                    id="chassisNumber"
+                    value={form.chassisNumber}
+                    onChange={(e) => setForm(p => ({ ...p, chassisNumber: e.target.value.toUpperCase() }))}
+                    maxLength={30}
+                    style={{ paddingRight: '40px' }}
+                  />
+                  <label className="floating-label" htmlFor="chassisNumber">Chassis / Engine Number</label>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      if (form.chassisNumber) {
+                        navigator.clipboard.writeText(form.chassisNumber);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      }
+                    }}
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '5px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    title="Copy"
+                  >
+                    {copied ? (
+                      <>
+                        <CheckIcon />
+                        <span style={{ fontSize: '10px', color: '#22c55e' }}>Copied!</span>
+                      </>
+                    ) : (
+                      <CopyIcon />
+                    )}
+                  </button>
                 </div>
               </div>
-              <p className="field-hint">Chassis / Engine Number (split)</p>
             </div>
           </div>
         </section>
