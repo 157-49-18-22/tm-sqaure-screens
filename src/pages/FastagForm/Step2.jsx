@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { State, City } from 'country-state-city';
 import './Step2.css';
 
-const fuelTypes = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'];
 const vehicleDescriptors = [
   'PETROL', 'DIESEL/HYBRID', 'ETHANOL', 'PETROL/METHANOL', 'METHANOL', 'PETROL/ETHANOL',
   'LNG', 'OTHER', 'DUEL DIESEL/BIO CNG', 'DUEL DIESEL/CNG', 'DUEL DIESEL/LNG', 'DIESEL',
@@ -51,14 +50,13 @@ function Step2({ formData, onNext, onBack }) {
     chassisNumber: '',
     engineNumber: '',
     ownerName: '',
-    fuelType: '',
     stateOfRegistrationIso: '',
     stateOfRegistration: '',
     city: '',
     color: '',
     vehicleDescriptor: '',
     barcode: '',
-    vcCode: '',
+    vcCode: 'VC-4',
   });
   const [errors, setErrors] = useState({});
 
@@ -88,7 +86,6 @@ function Step2({ formData, onNext, onBack }) {
     if (!form.chassisNumber) e.chassisNumber = 'Chassis number is required';
     if (!form.engineNumber) e.engineNumber = 'Engine number is required';
     if (!form.ownerName) e.ownerName = 'Owner name is required';
-    if (!form.fuelType) e.fuelType = 'Fuel type is required';
     if (!form.stateOfRegistration) e.stateOfRegistration = 'State is required';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -191,10 +188,6 @@ function Step2({ formData, onNext, onBack }) {
               {errors.ownerName && <span className="field-error">{errors.ownerName}</span>}
             </div>
             <div className="field-wrapper">
-              <SelectField icon={<FuelIcon />} label="fuelType" value={form.fuelType} onChange={set('fuelType')} options={fuelTypes} placeholder="Fuel Type" />
-              {errors.fuelType && <span className="field-error">{errors.fuelType}</span>}
-            </div>
-            <div className="field-wrapper">
               <SelectField icon={<HashIcon />} label="color" value={form.color} onChange={set('color')} options={['White', 'Black', 'Silver', 'Grey', 'Red', 'Blue', 'Brown', 'Yellow', 'Green', 'Other']} placeholder="Color" />
             </div>
             <div className="field-wrapper">
@@ -204,7 +197,12 @@ function Step2({ formData, onNext, onBack }) {
               <InputField icon={<HashIcon />} label="barcode" placeholder="Barcode (any number/text)" value={form.barcode} onChange={set('barcode')} maxLength={50} />
             </div>
             <div className="field-wrapper">
-              <SelectField icon={<CarIcon />} label="vcCode" value={form.vcCode} onChange={set('vcCode')} options={['Car', 'Jeep', 'Van']} placeholder="VC4" />
+              <div className="input-group">
+                <div className="input-icon"><CarIcon /></div>
+                <div className="input-wrap">
+                  <div className="vc4-static-label">VC4 — Car, Jeep, Van</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
