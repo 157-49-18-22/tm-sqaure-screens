@@ -62,6 +62,11 @@ async function initDB() {
         vehicleFront VARCHAR(255),
         vehicleSide VARCHAR(255),
         tagImage VARCHAR(255),
+        city VARCHAR(100),
+        color VARCHAR(50),
+        vehicleDescriptor VARCHAR(100),
+        barcode VARCHAR(100),
+        isCommercial VARCHAR(10),
         status VARCHAR(20) DEFAULT 'Pending',
         submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -121,8 +126,9 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
       INSERT INTO applications (
         mobile, pan, panName, dob, vehicleType, vehicleNumber, vcType,
         chassisNumber, engineNumber, ownerName, fuelType, stateOfRegistration, pincode,
-        panFile, rcFront, rcBack, vehicleFront, vehicleSide, tagImage
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        panFile, rcFront, rcBack, vehicleFront, vehicleSide, tagImage,
+        city, color, vehicleDescriptor, barcode, isCommercial
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     let chassis = bodyData.chassisNumber || (bodyData.chassisP1 ? `${bodyData.chassisP1}-${bodyData.chassisP2}-${bodyData.chassisP3}` : '');
@@ -133,7 +139,9 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
       chassis, bodyData.engineNumber, bodyData.ownerName,
       bodyData.fuelType, bodyData.stateOfRegistration, bodyData.pincode,
       filePaths.panFile, filePaths.rcFront, filePaths.rcBack,
-      filePaths.vehicleFront, filePaths.vehicleSide, filePaths.tagImage
+      filePaths.vehicleFront, filePaths.vehicleSide, filePaths.tagImage,
+      bodyData.city || '', bodyData.color || '', bodyData.vehicleDescriptor || '',
+      bodyData.barcode || '', bodyData.isCommercial || ''
     ];
 
     const [result] = await pool.query(q, values);
