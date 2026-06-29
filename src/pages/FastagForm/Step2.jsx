@@ -9,23 +9,24 @@ const vehicleDescriptors = [
   'DI-METHYL ETHER', 'FUEL CELL HYDROGEN', 'PURE EV', 'STRONG HYBRID EV', 'PLUG-IN HYBRID EV',
   'NOT APPLICABLE', 'PETROL/CNG', 'ELECTRIC(BOV)', 'PETROL/LPG', 'CNG ONLY', 'LPG ONLY', 'SOLAR', 'PETROL/HYBRID'
 ];
-const vehicleClasses = [
-  { value: 'VC4', label: 'VC4 - Car,Jeep,Van' },
-  { value: 'VC20', label: 'VC20 - Light Commercial Vehicle' },
-  { value: 'VC5', label: 'VC5 - Light Commercial Vehicle' },
-  { value: 'VC9', label: 'VC9 - Minibus 2 Axle' },
-  { value: 'VC6', label: 'VC6 - Light commercial vehicle 3 Axle' },
-  { value: 'VC8', label: 'VC8 - Bus 3 Axle' },
-  { value: 'VC11', label: 'VC11 - Truck 3 Axle' },
-  { value: 'VC7', label: 'VC7 - Bus 2 Axle' },
-  { value: 'VC10', label: 'VC10 - Truck 2 Axle' },
-  { value: 'VC12', label: 'VC12 - Truck 4 Axle' },
-  { value: 'VC13', label: 'VC13 - Truck 5 Axle' },
-  { value: 'VC14', label: 'VC14 - Truck 6 Axle' },
-  { value: 'VC15', label: 'VC15 - Truck Multi Axle 7 & above' },
-  { value: 'VC16', label: 'VC16 - Earth moving machinery' },
-  { value: 'VC17', label: 'VC17 - Heavy Construction m' }
-];
+const vcCodes = ['VC4','VC5','VC6','VC7','VC8','VC9','VC10','VC11','VC12','VC13','VC14','VC15','VC16','VC17','VC20'];
+const vcCodeMap = {
+  VC4:  ['Car,Jeep,Van'],
+  VC5:  ['Light Commercial Vehicle'],
+  VC6:  ['Light Commercial Vehicle 3 Axle'],
+  VC7:  ['Bus 2 Axle'],
+  VC8:  ['Bus 3 Axle'],
+  VC9:  ['Minibus 2 Axle'],
+  VC10: ['Truck 2 Axle'],
+  VC11: ['Truck 3 Axle'],
+  VC12: ['Truck 4 Axle'],
+  VC13: ['Truck 5 Axle'],
+  VC14: ['Truck 6 Axle'],
+  VC15: ['Truck Multi Axle 7 & above'],
+  VC16: ['Earth Moving Machinery'],
+  VC17: ['Heavy Construction Machine'],
+  VC20: ['Light Commercial Vehicle'],
+};
 
 function InputField({ icon, label, type = 'text', value, onChange, placeholder, maxLength }) {
   return (
@@ -67,13 +68,14 @@ function Step2({ formData, onNext, onBack }) {
     engineNumber: '',
     ownerName: '',
     fuelType: '',
-    stateOfRegistrationIso: '', // stores state iso code like 'MH'
-    stateOfRegistration: '',    // stores actual state name
+    stateOfRegistrationIso: '',
+    stateOfRegistration: '',
     city: '',
     color: '',
     vehicleDescriptor: '',
     barcode: '',
-    isCommercial: '',
+    vcCode: '',
+    vcType: '',
   });
   const [errors, setErrors] = useState({});
 
@@ -219,8 +221,41 @@ function Step2({ formData, onNext, onBack }) {
               <InputField icon={<HashIcon />} label="barcode" placeholder="Barcode (any number/text)" value={form.barcode} onChange={set('barcode')} maxLength={50} />
             </div>
             <div className="field-wrapper">
-              <SelectField icon={<CarIcon />} label="isCommercial" value={form.isCommercial} onChange={set('isCommercial')} options={vehicleClasses} placeholder="Vehicle Class" />
+              <div className="input-group">
+                <div className="input-icon"><CarIcon /></div>
+                <div className="input-wrap select-wrap">
+                  <select
+                    value={form.vcCode}
+                    onChange={(e) => setForm(prev => ({ ...prev, vcCode: e.target.value, vcType: '', isCommercial: e.target.value }))}
+                    className={`form-select ${form.vcCode ? 'has-value' : ''}`}
+                    id="vcCode"
+                  >
+                    <option value="">VC Code</option>
+                    {vcCodes.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <div className="select-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+                </div>
+              </div>
             </div>
+            {form.vcCode && vcCodeMap[form.vcCode] && (
+              <div className="field-wrapper">
+                <div className="input-group">
+                  <div className="input-icon"><CarIcon /></div>
+                  <div className="input-wrap select-wrap">
+                    <select
+                      value={form.vcType}
+                      onChange={set('vcType')}
+                      className={`form-select ${form.vcType ? 'has-value' : ''}`}
+                      id="vcType"
+                    >
+                      <option value="">{form.vcCode} — Select Type</option>
+                      {vcCodeMap[form.vcCode].map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <div className="select-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
