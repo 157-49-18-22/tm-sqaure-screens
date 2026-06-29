@@ -56,7 +56,7 @@ function Step2({ formData, onNext, onBack }) {
     color: '',
     vehicleDescriptor: '',
     barcode: '',
-    vcCode: 'VC-4',
+    vcCode: '',
   });
   const [errors, setErrors] = useState({});
 
@@ -200,7 +200,13 @@ function Step2({ formData, onNext, onBack }) {
               <div className="input-group">
                 <div className="input-icon"><CarIcon /></div>
                 <div className="input-wrap">
-                  <div className="vc4-static-label">VC4 — Car, Jeep, Van</div>
+                  <div 
+                    className={`vc4-static-label ${form.vcCode === 'VC-4' ? 'active' : ''}`}
+                    onClick={() => setForm(prev => ({ ...prev, vcCode: prev.vcCode === 'VC-4' ? '' : 'VC-4' }))}
+                    title="Click to select"
+                  >
+                    VC4 — Car, Jeep, Van
+                  </div>
                 </div>
               </div>
             </div>
