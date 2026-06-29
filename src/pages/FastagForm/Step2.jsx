@@ -9,24 +9,8 @@ const vehicleDescriptors = [
   'DI-METHYL ETHER', 'FUEL CELL HYDROGEN', 'PURE EV', 'STRONG HYBRID EV', 'PLUG-IN HYBRID EV',
   'NOT APPLICABLE', 'PETROL/CNG', 'ELECTRIC(BOV)', 'PETROL/LPG', 'CNG ONLY', 'LPG ONLY', 'SOLAR', 'PETROL/HYBRID'
 ];
-const vcCodes = ['VC4','VC5','VC6','VC7','VC8','VC9','VC10','VC11','VC12','VC13','VC14','VC15','VC16','VC17','VC20'];
-const vcCodeMap = {
-  VC4:  ['Car,Jeep,Van'],
-  VC5:  ['Light Commercial Vehicle'],
-  VC6:  ['Light Commercial Vehicle 3 Axle'],
-  VC7:  ['Bus 2 Axle'],
-  VC8:  ['Bus 3 Axle'],
-  VC9:  ['Minibus 2 Axle'],
-  VC10: ['Truck 2 Axle'],
-  VC11: ['Truck 3 Axle'],
-  VC12: ['Truck 4 Axle'],
-  VC13: ['Truck 5 Axle'],
-  VC14: ['Truck 6 Axle'],
-  VC15: ['Truck Multi Axle 7 & above'],
-  VC16: ['Earth Moving Machinery'],
-  VC17: ['Heavy Construction Machine'],
-  VC20: ['Light Commercial Vehicle'],
-};
+
+
 
 function InputField({ icon, label, type = 'text', value, onChange, placeholder, maxLength }) {
   return (
@@ -221,41 +205,7 @@ function Step2({ formData, onNext, onBack }) {
               <InputField icon={<HashIcon />} label="barcode" placeholder="Barcode (any number/text)" value={form.barcode} onChange={set('barcode')} maxLength={50} />
             </div>
             <div className="field-wrapper">
-              <div className="input-group">
-                <div className="input-icon"><CarIcon /></div>
-                <div className="input-wrap select-wrap">
-                  <select
-                    value={form.vcCode}
-                    onChange={(e) => setForm(prev => ({ ...prev, vcCode: e.target.value, vcType: '', isCommercial: e.target.value }))}
-                    className={`form-select ${form.vcCode ? 'has-value' : ''}`}
-                    id="vcCode"
-                  >
-                    <option value="">VC Code</option>
-                    {vcCodes.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <div className="select-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
-                </div>
-              </div>
-            </div>
-            {form.vcCode && vcCodeMap[form.vcCode] && (
-              <div className="field-wrapper">
-                <div className="input-group">
-                  <div className="input-icon"><CarIcon /></div>
-                  <div className="input-wrap select-wrap">
-                    <select
-                      value={form.vcType}
-                      onChange={set('vcType')}
-                      className={`form-select ${form.vcType ? 'has-value' : ''}`}
-                      id="vcType"
-                    >
-                      <option value="">{form.vcCode} — Select Type</option>
-                      {vcCodeMap[form.vcCode].map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                    <div className="select-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg></div>
-                  </div>
-                </div>
-              </div>
-            )}
+              <SelectField icon={<CarIcon />} label="vcCode" value={form.vcCode} onChange={set('vcCode')} options={['Car', 'Jeep', 'Van']} placeholder="VC4" />
           </div>
         </section>
 
