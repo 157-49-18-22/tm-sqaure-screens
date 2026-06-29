@@ -46,7 +46,7 @@ function SelectField({ icon, label, value, onChange, options, placeholder }) {
 function Step1({ onNext, onBack }) {
   const [form, setForm] = useState({
     mobile: '', pan: '', panName: '', dob: '',
-    vehicleType: '', vehicleNumber: '',
+    vehicleNumber: '',
     chassisNumber: '',
   });
   const [panFile, setPanFile] = useState(null);
@@ -203,9 +203,6 @@ function Step1({ onNext, onBack }) {
           </div>
 
           <div className="fields-grid fields-2col">
-            <div className="field-wrapper">
-              <SelectField icon={<CarIcon />} label="vehicleType" value={form.vehicleType} onChange={set('vehicleType')} options={vehicleTypes} placeholder="New Vehicle ?" />
-            </div>
             <div className="field-wrapper">
               <InputField icon={<CarIcon />} label="vehicleNumber" placeholder="Vehicle Number (e.g. MH01AB1234)" value={form.vehicleNumber} onChange={(e) => setForm(p => ({ ...p, vehicleNumber: e.target.value.toUpperCase() }))} maxLength={15} />
               {errors.vehicleNumber && <span className="field-error">{errors.vehicleNumber}</span>}
