@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { State, City } from 'country-state-city';
 import './Step2.css';
 
 const fuelTypes = ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'];
-const states = [
-  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
-  'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
-  'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab',
-  'Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh',
-  'Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh',
+const vehicleDescriptors = [
+  'PETROL', 'DIESEL/HYBRID', 'ETHANOL', 'PETROL/METHANOL', 'METHANOL', 'PETROL/ETHANOL',
+  'LNG', 'OTHER', 'DUEL DIESEL/BIO CNG', 'DUEL DIESEL/CNG', 'DUEL DIESEL/LNG', 'DIESEL',
+  'DI-METHYL ETHER', 'FUEL CELL HYDROGEN', 'PURE EV', 'STRONG HYBRID EV', 'PLUG-IN HYBRID EV',
+  'NOT APPLICABLE', 'PETROL/CNG', 'ELECTRIC(BOV)', 'PETROL/LPG', 'CNG ONLY', 'LPG ONLY', 'SOLAR', 'PETROL/HYBRID'
 ];
 
 function InputField({ icon, label, type = 'text', value, onChange, placeholder, maxLength }) {
@@ -50,11 +50,34 @@ function Step2({ formData, onNext, onBack }) {
     engineNumber: '',
     ownerName: '',
     fuelType: '',
-    stateOfRegistration: '',
+    stateOfRegistrationIso: '', // stores state iso code like 'MH'
+    stateOfRegistration: '',    // stores actual state name
+    city: '',
+    color: '',
+    vehicleDescriptor: '',
+    barcode: '',
+    isCommercial: '',
   });
   const [errors, setErrors] = useState({});
 
+  const indiaStates = useMemo(() => State.getStatesOfCountry('IN'), []);
+  const currentCities = useMemo(() => {
+    if (!form.stateOfRegistrationIso) return [];
+    return City.getCitiesOfState('IN', form.stateOfRegistrationIso);
+  }, [form.stateOfRegistrationIso]);
+
   const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
+
+  const handleStateChange = (e) => {
+    const selectedStateCode = e.target.value;
+    const selectedStateName = indiaStates.find(s => s.isoCode === selectedStateCode)?.name || '';
+    setForm(prev => ({
+      ...prev,
+      stateOfRegistrationIso: selectedStateCode,
+      stateOfRegistration: selectedStateName,
+      city: '' // reset city when state changes
+    }));
+  };
 
   const validate = () => {
     const e = {};
@@ -129,6 +152,31 @@ function Step2({ formData, onNext, onBack }) {
               {errors.vehicleNumber && <span className="field-error">{errors.vehicleNumber}</span>}
             </div>
             <div className="field-wrapper">
+              <div className="input-group">
+                <div className="input-icon"><MapIcon /></div>
+                <div className="input-wrap select-wrap">
+                  <select value={form.stateOfRegistrationIso} onChange={handleStateChange} className={`form-select ${form.stateOfRegistrationIso ? 'has-value' : ''}`} id="stateOfRegistration">
+                    <option value="">State of Registration</option>
+                    {indiaStates.map(st => <option key={st.isoCode} value={st.isoCode}>{st.name}</option>)}
+                  </select>
+                  <div className="select-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+                </div>
+              </div>
+              {errors.stateOfRegistration && <span className="field-error">{errors.stateOfRegistration}</span>}
+            </div>
+            <div className="field-wrapper">
+              <div className="input-group">
+                <div className="input-icon"><MapIcon /></div>
+                <div className="input-wrap select-wrap">
+                  <select value={form.city} onChange={set('city')} className={`form-select ${form.city ? 'has-value' : ''}`} id="city">
+                    <option value="">City</option>
+                    {currentCities.map(cty => <option key={cty.name} value={cty.name}>{cty.name}</option>)}
+                  </select>
+                  <div className="select-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+                </div>
+              </div>
+            </div>
+            <div className="field-wrapper">
               <InputField icon={<HashIcon />} label="chassisNumber" placeholder="Chassis Number" value={form.chassisNumber} onChange={set('chassisNumber')} maxLength={25} />
               {errors.chassisNumber && <span className="field-error">{errors.chassisNumber}</span>}
             </div>
@@ -144,9 +192,17 @@ function Step2({ formData, onNext, onBack }) {
               <SelectField icon={<FuelIcon />} label="fuelType" value={form.fuelType} onChange={set('fuelType')} options={fuelTypes} placeholder="Fuel Type" />
               {errors.fuelType && <span className="field-error">{errors.fuelType}</span>}
             </div>
-            <div className="field-wrapper fields-full">
-              <SelectField icon={<MapIcon />} label="stateOfRegistration" value={form.stateOfRegistration} onChange={set('stateOfRegistration')} options={states} placeholder="State of Registration" />
-              {errors.stateOfRegistration && <span className="field-error">{errors.stateOfRegistration}</span>}
+            <div className="field-wrapper">
+              <SelectField icon={<HashIcon />} label="color" value={form.color} onChange={set('color')} options={['White', 'Black', 'Silver', 'Grey', 'Red', 'Blue', 'Brown', 'Yellow', 'Green', 'Other']} placeholder="Color" />
+            </div>
+            <div className="field-wrapper">
+              <SelectField icon={<ListIcon />} label="vehicleDescriptor" value={form.vehicleDescriptor} onChange={set('vehicleDescriptor')} options={vehicleDescriptors} placeholder="Vehicle Descriptor" />
+            </div>
+            <div className="field-wrapper">
+              <SelectField icon={<HashIcon />} label="barcode" value={form.barcode} onChange={set('barcode')} options={['Available', 'Not Available', 'Type A', 'Type B']} placeholder="Barcode Type" />
+            </div>
+            <div className="field-wrapper">
+              <SelectField icon={<CarIcon />} label="isCommercial" value={form.isCommercial} onChange={set('isCommercial')} options={['Yes', 'No']} placeholder="Commercial Vehicle?" />
             </div>
           </div>
         </section>
