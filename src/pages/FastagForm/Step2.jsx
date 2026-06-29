@@ -59,7 +59,6 @@ function Step2({ formData, onNext, onBack }) {
     vehicleDescriptor: '',
     barcode: '',
     vcCode: '',
-    vcType: '',
   });
   const [errors, setErrors] = useState({});
 
