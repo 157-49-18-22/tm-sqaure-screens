@@ -1,6 +1,21 @@
 /* Step 2 imports shared styles + adds its own */
 @import './Step1.css';
 
+/* VC4 Static Label */
+.vc4-static-label {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-light);
+  background: rgba(108, 63, 197, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: var(--radius-md);
+  letter-spacing: 0.3px;
+}
+
 /* Submit Button */
 .btn-submit {
   display: flex;
