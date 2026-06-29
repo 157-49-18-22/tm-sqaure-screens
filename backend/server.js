@@ -67,6 +67,8 @@ async function initDB() {
         vehicleDescriptor VARCHAR(100),
         barcode VARCHAR(100),
         isCommercial VARCHAR(10),
+        vcCode VARCHAR(10),
+        vcType VARCHAR(100),
         status VARCHAR(20) DEFAULT 'Pending',
         submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -127,8 +129,8 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
         mobile, pan, panName, dob, vehicleType, vehicleNumber, vcType,
         chassisNumber, engineNumber, ownerName, fuelType, stateOfRegistration, pincode,
         panFile, rcFront, rcBack, vehicleFront, vehicleSide, tagImage,
-        city, color, vehicleDescriptor, barcode, isCommercial
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        city, color, vehicleDescriptor, barcode, isCommercial, vcCode, vcType
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     let chassis = bodyData.chassisNumber || (bodyData.chassisP1 ? `${bodyData.chassisP1}-${bodyData.chassisP2}-${bodyData.chassisP3}` : '');
@@ -141,7 +143,8 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
       filePaths.panFile, filePaths.rcFront, filePaths.rcBack,
       filePaths.vehicleFront, filePaths.vehicleSide, filePaths.tagImage,
       bodyData.city || '', bodyData.color || '', bodyData.vehicleDescriptor || '',
-      bodyData.barcode || '', bodyData.isCommercial || ''
+      bodyData.barcode || '', bodyData.isCommercial || '',
+      bodyData.vcCode || '', bodyData.vcType || ''
     ];
 
     const [result] = await pool.query(q, values);
@@ -162,6 +165,18 @@ app.put('/api/applications/:id/status', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+app.delete('/api/applications/:id', async (req, res) => {
+  try {
+    if (!pool) return res.status(500).json({ error: 'DB not ready' });
+    const { id } = req.params;
+    await pool.query('DELETE FROM applications WHERE id = ?', [id]);
+    res.json({ message: 'Application deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete application' });
   }
 });
 
