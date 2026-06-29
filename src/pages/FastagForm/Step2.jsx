@@ -205,6 +205,7 @@ function Step2({ formData, onNext, onBack }) {
             </div>
             <div className="field-wrapper">
               <SelectField icon={<CarIcon />} label="vcCode" value={form.vcCode} onChange={set('vcCode')} options={['Car', 'Jeep', 'Van']} placeholder="VC4" />
+            </div>
           </div>
         </section>
 
