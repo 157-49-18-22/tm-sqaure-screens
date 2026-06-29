@@ -96,6 +96,26 @@ function ApplicationModal({ app, onClose, onRefresh }) {
               <span>State</span>
               <strong>{app.stateOfRegistration || '—'}</strong>
             </div>
+            <div className="modal-field">
+              <span>City</span>
+              <strong>{app.city || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Color</span>
+              <strong>{app.color || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Vehicle Descriptor</span>
+              <strong>{app.vehicleDescriptor || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Barcode</span>
+              <strong>{app.barcode || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Vehicle Class</span>
+              <strong>{app.isCommercial || '—'}</strong>
+            </div>
           </div>
 
           <div className="modal-section-title">Uploaded Documents</div>
