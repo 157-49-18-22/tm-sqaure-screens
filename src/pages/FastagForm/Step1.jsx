@@ -46,7 +46,7 @@ function SelectField({ icon, label, value, onChange, options, placeholder }) {
 function Step1({ onNext, onBack }) {
   const [form, setForm] = useState({
     mobile: '', pan: '', panName: '', dob: '',
-    vehicleType: '', vehicleNumber: '', vcType: '',
+    vehicleType: '', vehicleNumber: '',
     chassisNumber: '',
   });
   const [panFile, setPanFile] = useState(null);
@@ -82,7 +82,6 @@ function Step1({ onNext, onBack }) {
     if (!form.panName) e.panName = 'Name is required';
     if (!form.dob) e.dob = 'Date of birth is required';
     if (!form.vehicleNumber) e.vehicleNumber = 'Vehicle number is required';
-    if (!form.vcType) e.vcType = 'VC Type is required';
     if (!panFile) e.panFile = 'PAN card upload is required';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -210,10 +209,6 @@ function Step1({ onNext, onBack }) {
             <div className="field-wrapper">
               <InputField icon={<CarIcon />} label="vehicleNumber" placeholder="Vehicle Number (e.g. MH01AB1234)" value={form.vehicleNumber} onChange={(e) => setForm(p => ({ ...p, vehicleNumber: e.target.value.toUpperCase() }))} maxLength={15} />
               {errors.vehicleNumber && <span className="field-error">{errors.vehicleNumber}</span>}
-            </div>
-            <div className="field-wrapper">
-              <SelectField icon={<TagIcon />} label="vcType" value={form.vcType} onChange={set('vcType')} options={vcTypes} placeholder="Select VC Type" />
-              {errors.vcType && <span className="field-error">{errors.vcType}</span>}
             </div>
             <div className="field-wrapper">
               <div className="input-group" style={{ position: 'relative' }}>
