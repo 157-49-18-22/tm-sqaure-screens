@@ -129,8 +129,8 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
         mobile, pan, panName, dob, vehicleType, vehicleNumber, vcType,
         chassisNumber, engineNumber, ownerName, fuelType, stateOfRegistration, pincode,
         panFile, rcFront, rcBack, vehicleFront, vehicleSide, tagImage,
-        city, color, vehicleDescriptor, barcode, isCommercial, vcCode, vcType
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        city, color, vehicleDescriptor, barcode, isCommercial, vcCode
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     let chassis = bodyData.chassisNumber || (bodyData.chassisP1 ? `${bodyData.chassisP1}-${bodyData.chassisP2}-${bodyData.chassisP3}` : '');
@@ -144,7 +144,7 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
       filePaths.vehicleFront, filePaths.vehicleSide, filePaths.tagImage,
       bodyData.city || '', bodyData.color || '', bodyData.vehicleDescriptor || '',
       bodyData.barcode || '', bodyData.isCommercial || '',
-      bodyData.vcCode || '', bodyData.vcType || ''
+      bodyData.vcCode || ''
     ];
 
     const [result] = await pool.query(q, values);
