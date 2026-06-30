@@ -82,11 +82,11 @@ function ApplicationModal({ app, onClose, onRefresh }) {
             </div>
             <div className="modal-field">
               <span>VC Type</span>
-              <strong>{app.vcType || '—'}</strong>
+              <strong>{app.vcCode || app.vcType || 'VC-4'}</strong>
             </div>
             <div className="modal-field">
               <span>Vehicle Type</span>
-              <strong>{app.vehicleType || '—'}</strong>
+              <strong>{app.vehicleType || 'Car, Jeep, Van'}</strong>
             </div>
             <div className="modal-field">
               <span>Owner Name</span>
@@ -94,7 +94,7 @@ function ApplicationModal({ app, onClose, onRefresh }) {
             </div>
             <div className="modal-field">
               <span>Fuel Type</span>
-              <strong>{app.fuelType || '—'}</strong>
+              <strong>{app.fuelType || 'N/A'}</strong>
             </div>
             <div className="modal-field">
               <span>Chassis No.</span>
@@ -130,7 +130,7 @@ function ApplicationModal({ app, onClose, onRefresh }) {
             </div>
             <div className="modal-field">
               <span>Vehicle Class</span>
-              <strong>{app.isCommercial || '—'}</strong>
+              <strong>{app.isCommercial || 'Non-Commercial'}</strong>
             </div>
           </div>
 
