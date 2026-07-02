@@ -222,7 +222,12 @@ function Dashboard({ onNewForm }) {
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/api/applications?limit=${PAGE_SIZE}&offset=${currentOffset}`);
-      const data = await res.json();
+      const raw = await res.json();
+      // API may return array directly OR { data: [], total: N }
+      const data = Array.isArray(raw) ? raw
+        : Array.isArray(raw?.data) ? raw.data
+        : Array.isArray(raw?.applications) ? raw.applications
+        : [];
       setSubmissions(prev => replace ? data : [...prev, ...data]);
       setOffset(currentOffset + data.length);
     } catch (e) {
@@ -257,13 +262,15 @@ function Dashboard({ onNewForm }) {
     }
   };
 
-  const today = submissions.filter(s => {
+  const safeSubmissions = Array.isArray(submissions) ? submissions : [];
+
+  const today = safeSubmissions.filter(s => {
     const d = new Date(s.submittedAt);
     const now = new Date();
     return d.toDateString() === now.toDateString();
   }).length;
 
-  const hasMore = submissions.length < totalCount;
+  const hasMore = safeSubmissions.length < totalCount;
 
   return (
     <div className="dashboard">
@@ -296,13 +303,13 @@ function Dashboard({ onNewForm }) {
         <StatCard
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>}
           label="Pending Review"
-          value={submissions.filter(s => !s.status || s.status === 'Pending').length}
+          value={safeSubmissions.filter(s => !s.status || s.status === 'Pending').length}
           color="amber"
         />
         <StatCard
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
           label="Completed"
-          value={submissions.filter(s => s.status === 'Accepted').length}
+          value={safeSubmissions.filter(s => s.status === 'Accepted').length}
           color="green"
         />
       </div>
@@ -316,7 +323,7 @@ function Dashboard({ onNewForm }) {
             </svg>
             Recent Applications
           </h2>
-          <span className="table-count">{submissions.length} of {totalCount}</span>
+          <span className="table-count">{safeSubmissions.length} of {totalCount}</span>
         </div>
 
         {initialLoading ? (
@@ -324,7 +331,7 @@ function Dashboard({ onNewForm }) {
             <div className="loading-spinner" />
             <p className="empty-sub">Loading applications...</p>
           </div>
-        ) : submissions.length === 0 ? (
+        ) : safeSubmissions.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -352,7 +359,7 @@ function Dashboard({ onNewForm }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {submissions.map((s, i) => (
+                  {safeSubmissions.map((s, i) => (
                     <tr key={s.id}>
                       <td className="td-index">{i + 1}</td>
                       <td className="td-name">
@@ -401,13 +408,13 @@ function Dashboard({ onNewForm }) {
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="6 9 12 15 18 9"/>
                       </svg>
-                      Load More ({totalCount - submissions.length} remaining)
+                      Load More ({totalCount - safeSubmissions.length} remaining)
                     </>
                   )}
                 </button>
               </div>
             )}
-            {!hasMore && submissions.length > PAGE_SIZE && (
+            {!hasMore && safeSubmissions.length > PAGE_SIZE && (
               <div className="load-more-wrapper">
                 <p className="all-loaded-text">✓ All {totalCount} records loaded</p>
               </div>
