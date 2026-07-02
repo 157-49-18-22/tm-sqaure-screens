@@ -1,4 +1,4 @@
-/* ── Shared Form Page Styles (used by both Step1 & Step2) ── */
+/* ── Shared Form Page Styles (used by Step1, Step2, Step3) ── */
 
 .form-page {
   padding: 32px 36px;
@@ -17,6 +17,7 @@
   gap: 8px;
   margin-bottom: 12px;
   color: var(--text-muted);
+  flex-wrap: wrap;
 }
 
 .step-pill {
@@ -423,6 +424,8 @@
   padding: 24px 32px;
   border-top: 1px solid var(--border);
   background: rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .btn-back {
@@ -483,10 +486,170 @@
   border-radius: var(--radius-md);
   font-size: 13px;
   color: var(--text-secondary);
+  flex-wrap: wrap;
 }
 
 .carry-over-chip strong {
   color: var(--primary-light);
   font-family: monospace;
   letter-spacing: 1px;
+}
+
+/* ════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+════════════════════════════════ */
+
+/* Tablet (≤ 1024px) */
+@media (max-width: 1024px) {
+  .form-page {
+    padding: 24px 24px;
+  }
+
+  .form-section {
+    padding: 22px 24px;
+  }
+
+  .section-divider {
+    margin: 0 24px;
+  }
+
+  .form-actions {
+    padding: 20px 24px;
+  }
+
+  .carry-over-chip {
+    margin: 12px 24px;
+  }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  .form-page {
+    padding: 16px 14px;
+  }
+
+  .form-page-title {
+    font-size: 20px;
+  }
+
+  .form-page-sub {
+    font-size: 13px;
+  }
+
+  .step-breadcrumb {
+    gap: 6px;
+  }
+
+  .step-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .form-container {
+    border-radius: var(--radius-lg);
+  }
+
+  .form-section {
+    padding: 18px 16px;
+  }
+
+  .section-divider {
+    margin: 0 16px;
+  }
+
+  .section-header {
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .section-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+
+  /* Stack 2-col grids to single column */
+  .fields-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .input-group {
+    height: 48px;
+  }
+
+  .form-input {
+    font-size: 13px;
+  }
+
+  .floating-label {
+    font-size: 13px;
+  }
+
+  .upload-zone {
+    padding: 24px 16px;
+  }
+
+  .upload-title {
+    font-size: 13px;
+  }
+
+  .form-actions {
+    padding: 16px;
+    flex-direction: column-reverse;
+  }
+
+  .btn-back,
+  .btn-next {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .carry-over-chip {
+    margin: 10px 16px;
+    font-size: 12px;
+  }
+
+  .chassis-split {
+    flex-direction: column;
+    height: auto;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .chassis-input {
+    width: 100%;
+    height: 40px !important;
+  }
+
+  .chassis-sep {
+    display: none;
+  }
+}
+
+/* Small Mobile (≤ 480px) */
+@media (max-width: 480px) {
+  .form-page {
+    padding: 12px 10px;
+  }
+
+  .form-page-title {
+    font-size: 18px;
+  }
+
+  .section-title {
+    font-size: 14px;
+  }
+
+  .section-sub {
+    font-size: 12px;
+  }
+
+  .btn-back,
+  .btn-next {
+    font-size: 13px;
+    padding: 11px 16px;
+  }
 }
