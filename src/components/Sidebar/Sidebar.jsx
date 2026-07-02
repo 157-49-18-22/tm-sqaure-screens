@@ -22,13 +22,7 @@ const navItems = [
   },
 ];
 
-const FastagIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-    <path d="M2 17l10 5 10-5" />
-    <path d="M2 12l10 5 10-5" />
-  </svg>
-);
+// FastagIcon component removed
 
 function Sidebar({ activePage, onNavigate }) {
   return (
@@ -36,7 +30,7 @@ function Sidebar({ activePage, onNavigate }) {
       {/* Logo / Brand */}
       <div className="sidebar-brand">
         <div className="sidebar-logo">
-          <FastagIcon />
+          <img src="/logo1.png" alt="SBI Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         <div className="sidebar-brand-text">
           <span className="brand-name">SBI FASTag</span>
@@ -67,20 +61,9 @@ function Sidebar({ activePage, onNavigate }) {
         ))}
       </nav>
 
-      {/* SBI FASTag Badge */}
-      <div className="sidebar-badge">
-        <div className="badge-icon">🏦</div>
-        <div className="badge-text">
-          <strong>SBI FASTag</strong>
-          <span>Powered by NPCI</span>
-        </div>
-      </div>
+      {/* Badge removed as requested */}
 
-      {/* Footer */}
-      <div className="sidebar-footer">
-        <p>© 2025 SBI FASTag</p>
-        <p>v1.0.0</p>
-      </div>
+      {/* Footer removed as requested */}
     </aside>
   );
 }
