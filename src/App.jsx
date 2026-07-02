@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Sidebar from './components/Sidebar/Sidebar';
 import Dashboard from './components/Dashboard/Dashboard';
-import Login from './pages/Login/Login';
+import Login from './pages/Login';
 import Step1 from './pages/FastagForm/Step1';
 import Step2 from './pages/FastagForm/Step2';
 import Step3 from './pages/FastagForm/Step3';
