@@ -146,6 +146,45 @@ function Step3({ formData, onSubmit, onBack }) {
     }
   };
 
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      if (!file || !file.type.startsWith('image/')) {
+        return resolve(file); // Not an image (e.g. PDF), don't compress
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let { width, height } = img;
+          const MAX_SIZE = 800; // max width or height
+
+          if (width > height && width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          } else if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            }));
+          }, 'image/jpeg', 0.6); // 60% quality JPEG
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const validate = () => {
     const e = {};
     uploads.forEach(u => {
@@ -167,10 +206,15 @@ function Step3({ formData, onSubmit, onBack }) {
         }
       });
       
-      if (formData.panFile) dbData.append('panFile', formData.panFile);
-      Object.keys(files).forEach(key => {
-        if (files[key]) dbData.append(key, files[key]);
-      });
+      if (formData.panFile) {
+        dbData.append('panFile', await compressImage(formData.panFile));
+      }
+      
+      for (const key of Object.keys(files)) {
+        if (files[key]) {
+          dbData.append(key, await compressImage(files[key]));
+        }
+      }
 
       const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const res = await fetch(`${API_BASE}/api/applications`, {
