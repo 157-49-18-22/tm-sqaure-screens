@@ -10,6 +10,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .dashboard-title {
@@ -44,6 +46,7 @@
   font-family: 'Inter', sans-serif;
   box-shadow: 0 4px 15px var(--primary-glow);
   letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 .btn-new-fastag:hover {
@@ -139,6 +142,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .table-card-title {
@@ -196,13 +201,14 @@
 }
 
 /* Table */
-.table-wrapper { overflow-x: auto; }
+.table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
   text-align: left;
+  min-width: 600px;
 }
 
 .data-table thead th {
@@ -317,17 +323,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
-  /* Subtle diagonal lines pattern on overlay */
-  background-image:
-    rgba(10, 15, 50, 0.75),
-    repeating-linear-gradient(
-      45deg,
-      rgba(0, 181, 239, 0.03) 0px,
-      rgba(0, 181, 239, 0.03) 1px,
-      transparent 1px,
-      transparent 12px
-    );
+  padding: 16px;
 }
 
 .modal-content {
@@ -336,14 +332,13 @@
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 720px;
-  max-height: 90vh;
+  max-height: 92vh;
   overflow-y: auto;
   box-shadow:
     0 25px 60px rgba(41, 32, 117, 0.25),
     0 0 0 1px rgba(0, 181, 239, 0.1);
   display: flex;
   flex-direction: column;
-  /* Subtle grid pattern inside modal */
   background-image:
     linear-gradient(rgba(0, 181, 239, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 181, 239, 0.025) 1px, transparent 1px);
@@ -357,6 +352,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
   background: linear-gradient(135deg, var(--sbi-dark-blue) 0%, #1a1660 100%);
   position: sticky;
   top: 0;
@@ -388,6 +384,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .modal-close:hover {
@@ -542,6 +539,7 @@
   gap: 16px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 
 .btn-modal-reject {
@@ -676,4 +674,125 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   flex-shrink: 0;
+}
+
+/* ════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+════════════════════════════════ */
+
+/* Tablet (≤ 1024px) */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal-images-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 20px 16px;
+  }
+
+  .dashboard-title {
+    font-size: 22px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 13px;
+  }
+
+  .btn-new-fastag {
+    padding: 10px 16px;
+    font-size: 13px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .table-card-header {
+    padding: 14px 16px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .modal-images-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .modal-actions-wrapper {
+    flex-direction: column-reverse;
+  }
+
+  .btn-modal-reject,
+  .btn-modal-accept {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+}
+
+/* Small Mobile (≤ 480px) */
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-images-grid {
+    grid-template-columns: 1fr;
+  }
 }
