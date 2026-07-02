@@ -67,6 +67,13 @@ async function initDB() {
     `;
     await pool.query(createTableQuery);
 
+    // Force alter in case they were created as VARCHAR(255) previously
+    try {
+      await pool.query('ALTER TABLE applications MODIFY panFile LONGTEXT, MODIFY rcFront LONGTEXT, MODIFY rcBack LONGTEXT, MODIFY vehicleFront LONGTEXT, MODIFY vehicleSide LONGTEXT, MODIFY tagImage LONGTEXT;');
+    } catch(e) {
+      console.log('Alter table skipped or failed (might already be longtext)');
+    }
+
     console.log('TiDB connected and table ready.');
   } catch (err) {
     console.error('DB Init Error:', err.message);
