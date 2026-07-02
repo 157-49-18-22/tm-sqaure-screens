@@ -12,11 +12,31 @@ const StatCard = ({ icon, label, value, color }) => (
   </div>
 );
 
-function ApplicationModal({ app, onClose, onRefresh }) {
+function ApplicationModal({ appId, onClose, onRefresh }) {
+  const [app, setApp] = useState(null);
+  const [loadingModal, setLoadingModal] = useState(false);
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    if (!appId) { setApp(null); return; }
+    setLoadingModal(true);
+    fetch(`${API_BASE}/api/applications/${appId}`)
+      .then(r => r.json())
+      .then(data => setApp(data))
+      .catch(console.error)
+      .finally(() => setLoadingModal(false));
+  }, [appId]);
+
+  if (!appId) return null;
+  if (loadingModal) return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content animate-fadeInUp" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
+        <div className="loading-spinner" />
+      </div>
+    </div>
+  );
   if (!app) return null;
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  const backendUrl = `${API_BASE}/uploads/`;
   const images = [
     { label: 'PAN Card', file: app.panFile },
     { label: 'RC Front', file: app.rcFront },
@@ -140,17 +160,17 @@ function ApplicationModal({ app, onClose, onRefresh }) {
               <div key={i} className="modal-image-card">
                 <span className="modal-image-label">{img.label}</span>
                 {img.file ? (
-                  img.file.endsWith('.pdf') ? (
-                    <div className="modal-pdf-box">
-                       <div>📄</div>
-                       <a href={backendUrl + img.file} target="_blank" rel="noreferrer">Open PDF</a>
-                    </div>
-                  ) : (
-                    <a href={backendUrl + img.file} target="_blank" rel="noreferrer">
-                      <img src={backendUrl + img.file} alt={img.label} className="modal-doc-img" />
-                    </a>
-                  )
-                ) : (
+                   img.file.startsWith('data:application/pdf') ? (
+                     <div className="modal-pdf-box">
+                        <div>📄</div>
+                        <a href={img.file} download={`${img.label}.pdf`} target="_blank" rel="noreferrer">Open PDF</a>
+                     </div>
+                   ) : (
+                     <a href={img.file} target="_blank" rel="noreferrer">
+                       <img src={img.file} alt={img.label} className="modal-doc-img" />
+                     </a>
+                   )
+                 ) : (
                    <div className="modal-no-doc">No Document</div>
                 )}
               </div>
@@ -182,7 +202,7 @@ function Dashboard({ onNewForm }) {
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [selectedApp, setSelectedApp] = useState(null);
+  const [selectedAppId, setSelectedAppId] = useState(null);
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -349,7 +369,7 @@ function Dashboard({ onNewForm }) {
                       </td>
                       <td>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <button className="btn-view" onClick={() => setSelectedApp(s)}>View Details</button>
+                          <button className="btn-view" onClick={() => setSelectedAppId(s.id)}>View Details</button>
                           <button className="btn-delete" onClick={() => handleDelete(s.id)} title="Delete">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
@@ -396,7 +416,7 @@ function Dashboard({ onNewForm }) {
         )}
       </div>
 
-      <ApplicationModal app={selectedApp} onClose={() => setSelectedApp(null)} onRefresh={loadData} />
+      <ApplicationModal appId={selectedAppId} onClose={() => setSelectedAppId(null)} onRefresh={loadData} />
     </div>
   );
 }
