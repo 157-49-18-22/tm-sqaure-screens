@@ -43,3 +43,51 @@
   z-index: 1;
   min-height: 100vh;
 }
+
+/* ── Mobile Top Bar ── */
+.mobile-topbar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: var(--sbi-dark-blue);
+  border-bottom: 1px solid rgba(0, 181, 239, 0.2);
+  z-index: 120;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 0 58px; /* left padding for hamburger */
+  box-shadow: 0 2px 12px rgba(41, 32, 117, 0.3);
+}
+
+.mobile-topbar-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-topbar-logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ════════════════════════════════
+   MOBILE RESPONSIVE (≤ 768px)
+════════════════════════════════ */
+@media (max-width: 768px) {
+  .app-content {
+    margin-left: 0;
+    padding-top: 56px; /* space for fixed top bar */
+  }
+
+  .mobile-topbar {
+    display: flex;
+  }
+}
