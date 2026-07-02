@@ -174,21 +174,61 @@ function ApplicationModal({ app, onClose, onRefresh }) {
   );
 }
 
+const PAGE_SIZE = 10;
+
 function Dashboard({ onNewForm }) {
   const [submissions, setSubmissions] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState(null);
 
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  // Fetch total count once
+  const fetchCount = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/applications/count`);
+      const data = await res.json();
+      setTotalCount(data.total);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Fetch a page of records and append
+  const fetchPage = async (currentOffset, replace = false) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/applications?limit=${PAGE_SIZE}&offset=${currentOffset}`);
+      const data = await res.json();
+      setSubmissions(prev => replace ? data : [...prev, ...data]);
+      setOffset(currentOffset + data.length);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+      setInitialLoading(false);
+    }
+  };
+
+  // Refresh: reload from scratch
   const loadData = () => {
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(`${API_BASE}/api/applications`)
-      .then(res => res.json())
-      .then(data => setSubmissions(data))
-      .catch(console.error);
+    fetchCount();
+    fetchPage(0, true);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleLoadMore = () => {
+    fetchPage(offset);
   };
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this application?')) return;
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       await fetch(`${API_BASE}/api/applications/${id}`, { method: 'DELETE' });
       loadData();
@@ -197,16 +237,13 @@ function Dashboard({ onNewForm }) {
     }
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const total = submissions.length;
   const today = submissions.filter(s => {
     const d = new Date(s.submittedAt);
     const now = new Date();
     return d.toDateString() === now.toDateString();
   }).length;
+
+  const hasMore = submissions.length < totalCount;
 
   return (
     <div className="dashboard">
@@ -227,7 +264,7 @@ function Dashboard({ onNewForm }) {
         <StatCard
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
           label="Total Registrations"
-          value={total}
+          value={totalCount}
           color="purple"
         />
         <StatCard
@@ -239,13 +276,13 @@ function Dashboard({ onNewForm }) {
         <StatCard
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>}
           label="Pending Review"
-          value={total}
+          value={submissions.filter(s => !s.status || s.status === 'Pending').length}
           color="amber"
         />
         <StatCard
           icon={<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>}
           label="Completed"
-          value={0}
+          value={submissions.filter(s => s.status === 'Accepted').length}
           color="green"
         />
       </div>
@@ -259,10 +296,15 @@ function Dashboard({ onNewForm }) {
             </svg>
             Recent Applications
           </h2>
-          <span className="table-count">{total} total</span>
+          <span className="table-count">{submissions.length} of {totalCount}</span>
         </div>
 
-        {submissions.length === 0 ? (
+        {initialLoading ? (
+          <div className="empty-state">
+            <div className="loading-spinner" />
+            <p className="empty-sub">Loading applications...</p>
+          </div>
+        ) : submissions.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -275,51 +317,82 @@ function Dashboard({ onNewForm }) {
             <button className="btn-new-fastag" onClick={onNewForm}>Start New Application</button>
           </div>
         ) : (
-          <div className="table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Mobile</th>
-                  <th>Vehicle No.</th>
-                  <th>VC Type</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {submissions.map((s, i) => (
-                  <tr key={s.id}>
-                    <td className="td-index">{i + 1}</td>
-                    <td className="td-name">
-                      <div className="td-avatar">{(s.panName || s.ownerName || 'N')[0]?.toUpperCase()}</div>
-                      {s.panName || s.ownerName || '—'}
-                    </td>
-                    <td>{s.mobile || '—'}</td>
-                    <td className="td-vehicle">{s.vehicleNumber || '—'}</td>
-                    <td>{s.vcType || '—'}</td>
-                    <td>
-                      <span className={`badge-status badge-${(s.status || 'Pending').toLowerCase()}`}>
-                        {s.status || 'Pending'}
-                      </span>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <button className="btn-view" onClick={() => setSelectedApp(s)}>View Details</button>
-                        <button className="btn-delete" onClick={() => handleDelete(s.id)}
-                          title="Delete">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="table-wrapper">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Vehicle No.</th>
+                    <th>VC Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {submissions.map((s, i) => (
+                    <tr key={s.id}>
+                      <td className="td-index">{i + 1}</td>
+                      <td className="td-name">
+                        <div className="td-avatar">{(s.panName || s.ownerName || 'N')[0]?.toUpperCase()}</div>
+                        {s.panName || s.ownerName || '—'}
+                      </td>
+                      <td>{s.mobile || '—'}</td>
+                      <td className="td-vehicle">{s.vehicleNumber || '—'}</td>
+                      <td>{s.vcType || '—'}</td>
+                      <td>
+                        <span className={`badge-status badge-${(s.status || 'Pending').toLowerCase()}`}>
+                          {s.status || 'Pending'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <button className="btn-view" onClick={() => setSelectedApp(s)}>View Details</button>
+                          <button className="btn-delete" onClick={() => handleDelete(s.id)} title="Delete">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Load More */}
+            {hasMore && (
+              <div className="load-more-wrapper">
+                <button
+                  className="btn-load-more"
+                  onClick={handleLoadMore}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="load-spinner" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                      Load More ({totalCount - submissions.length} remaining)
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+            {!hasMore && submissions.length > PAGE_SIZE && (
+              <div className="load-more-wrapper">
+                <p className="all-loaded-text">✓ All {totalCount} records loaded</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
