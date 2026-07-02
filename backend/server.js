@@ -98,10 +98,26 @@ const fileFields = [
   { name: 'tagImage', maxCount: 1 }
 ];
 
+app.get('/api/applications/count', async (req, res) => {
+  try {
+    if (!pool) return res.status(500).json({ error: 'DB not ready' });
+    const [rows] = await pool.query('SELECT COUNT(*) as total FROM applications');
+    res.json({ total: rows[0].total });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.get('/api/applications', async (req, res) => {
   try {
     if (!pool) return res.status(500).json({ error: 'DB not ready' });
-    const [rows] = await pool.query('SELECT * FROM applications ORDER BY submittedAt DESC');
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+    const [rows] = await pool.query(
+      'SELECT * FROM applications ORDER BY submittedAt DESC LIMIT ? OFFSET ?',
+      [limit, offset]
+    );
     res.json(rows);
   } catch (error) {
     console.error(error);
