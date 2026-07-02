@@ -250,7 +250,7 @@
   text-align: center;
   gap: 16px;
   animation: fadeInUp 0.6s ease forwards;
-  padding: 40px;
+  padding: 40px 20px;
 }
 
 .success-icon-wrap {
@@ -292,6 +292,8 @@
   border-radius: var(--radius-md);
   font-size: 13px;
   color: var(--text-secondary);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .success-details strong { color: var(--primary-light); }
@@ -315,4 +317,105 @@
 @keyframes loader-fill {
   from { width: 0%; }
   to { width: 100%; }
+}
+
+/* ════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+════════════════════════════════ */
+
+/* Tablet (≤ 1024px) */
+@media (max-width: 1024px) {
+  .upload-progress-row {
+    padding: 12px 24px;
+  }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  /* Stack upload cards to single column */
+  .upload-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .upload-card {
+    min-height: 130px;
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .card-label {
+    font-size: 12px;
+  }
+
+  .card-preview-wrap {
+    height: 130px;
+  }
+
+  .upload-progress-row {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .upload-progress-label {
+    font-size: 11px;
+    min-width: 60px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    justify-content: center;
+    font-size: 13px;
+    padding: 12px 20px;
+  }
+
+  .success-screen {
+    padding: 32px 16px;
+  }
+
+  .success-title {
+    font-size: 22px;
+  }
+
+  .success-sub {
+    font-size: 13px;
+  }
+
+  .success-icon-wrap {
+    width: 84px;
+    height: 84px;
+  }
+
+  .success-details {
+    gap: 16px;
+    padding: 12px 16px;
+    font-size: 12px;
+  }
+
+  .success-loader {
+    width: 180px;
+  }
+}
+
+/* Small Mobile (≤ 480px) */
+@media (max-width: 480px) {
+  .upload-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .success-title {
+    font-size: 18px;
+  }
+
+  .success-sub {
+    font-size: 12px;
+  }
+
+  .success-icon-wrap {
+    width: 70px;
+    height: 70px;
+  }
 }
