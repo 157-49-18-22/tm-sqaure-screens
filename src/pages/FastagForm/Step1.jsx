@@ -43,14 +43,62 @@ function SelectField({ icon, label, value, onChange, options, placeholder }) {
   );
 }
 
+function DocUpload({ docId, label, subLabel, file, preview, onFile, fileRef }) {
+  const [dragOver, setDragOver] = useState(false);
+  return (
+    <div
+      className={`upload-zone ${dragOver ? 'drag-over' : ''} ${file ? 'has-file' : ''}`}
+      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={(e) => { e.preventDefault(); setDragOver(false); onFile(e.dataTransfer.files[0], docId); }}
+      onClick={() => fileRef.current.click()}
+      style={{ marginBottom: '16px', padding: '16px', minHeight: '130px' }}
+    >
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/jpg,application/pdf"
+        style={{ display: 'none' }}
+        onChange={(e) => onFile(e.target.files[0], docId)}
+      />
+      {preview && preview !== 'pdf' ? (
+        <div className="preview-wrap">
+          <img src={preview} alt={`${label} Preview`} className="pan-preview-img" style={{ maxHeight: '100px', objectFit: 'contain' }} />
+          <div className="preview-overlay"><p style={{ fontSize: '12px' }}>Click to change</p></div>
+        </div>
+      ) : preview === 'pdf' ? (
+        <div className="pdf-preview" style={{ padding: '10px' }}>
+          <div className="pdf-icon">📄</div>
+          <p className="pdf-name" style={{ fontSize: '12px' }}>{file?.name}</p>
+        </div>
+      ) : (
+        <div className="upload-placeholder">
+          <p className="upload-title" style={{ fontSize: '13px', marginBottom: '4px', textAlign: 'center' }}>{label}</p>
+          <p className="upload-sub" style={{ fontSize: '11px', textAlign: 'center' }}>{subLabel}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Step1({ onNext, onBack }) {
   const [form, setForm] = useState({
     mobile: '', pan: '', panName: '', dob: '',
+    title: '', firstName: '', middleName: '', lastName: '', maidenName: '', region: '',
+    vehicleClass: '',
     vehicleNumber: '',
     chassisNumber: '',
+    isCommercial: '',
   });
   const [panFile, setPanFile] = useState(null);
   const [panPreview, setPanPreview] = useState(null);
+  const [docs, setDocs] = useState({ doc1: null, doc2: null, doc3: null, doc4: null });
+  const [docPreviews, setDocPreviews] = useState({ doc1: null, doc2: null, doc3: null, doc4: null });
+  const doc1Ref = useRef();
+  const doc2Ref = useRef();
+  const doc3Ref = useRef();
+  const doc4Ref = useRef();
+
   const [errors, setErrors] = useState({});
   const [dragOver, setDragOver] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -75,6 +123,20 @@ function Step1({ onNext, onBack }) {
     }
   };
 
+  const handleDocFile = (file, docId) => {
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(file.type)) return;
+    
+    setDocs(prev => ({ ...prev, [docId]: file }));
+    if (file.type !== 'application/pdf') {
+      const reader = new FileReader();
+      reader.onload = (e) => setDocPreviews(prev => ({ ...prev, [docId]: e.target.result }));
+      reader.readAsDataURL(file);
+    } else {
+      setDocPreviews(prev => ({ ...prev, [docId]: 'pdf' }));
+    }
+  };
+
   const validate = () => {
     const e = {};
     if (!form.mobile || form.mobile.length !== 10) e.mobile = 'Enter valid 10-digit mobile';
@@ -88,7 +150,7 @@ function Step1({ onNext, onBack }) {
   };
 
   const handleNext = () => {
-    if (validate()) onNext({ ...form, panFile });
+    if (validate()) onNext({ ...form, panFile, ...docs });
   };
 
   const PhoneIcon = () => (
@@ -168,7 +230,7 @@ function Step1({ onNext, onBack }) {
             </div>
           </div>
 
-          <div className="fields-grid fields-2col">
+          <div className="fields-grid fields-3col">
             <div className="field-wrapper">
               <InputField icon={<PhoneIcon />} label="mobile" placeholder="Mobile Number" type="tel" value={form.mobile} onChange={set('mobile')} maxLength={10} />
               {errors.mobile && <span className="field-error">{errors.mobile}</span>}
@@ -184,6 +246,24 @@ function Step1({ onNext, onBack }) {
             <div className="field-wrapper">
               <InputField icon={<CalIcon />} label="dob" placeholder="Date of Birth" type="date" value={form.dob} onChange={set('dob')} />
               {errors.dob && <span className="field-error">{errors.dob}</span>}
+            </div>
+            <div className="field-wrapper">
+              <SelectField icon={<UserIcon />} label="title" placeholder="Select Title" options={['Mr', 'Mrs', 'Ms', 'Dr']} value={form.title} onChange={set('title')} />
+            </div>
+            <div className="field-wrapper">
+              <InputField icon={<UserIcon />} label="firstName" placeholder="First Name" value={form.firstName} onChange={set('firstName')} />
+            </div>
+            <div className="field-wrapper">
+              <InputField icon={<UserIcon />} label="middleName" placeholder="Middle Name" value={form.middleName} onChange={set('middleName')} />
+            </div>
+            <div className="field-wrapper">
+              <InputField icon={<UserIcon />} label="lastName" placeholder="Last Name" value={form.lastName} onChange={set('lastName')} />
+            </div>
+            <div className="field-wrapper">
+              <InputField icon={<UserIcon />} label="maidenName" placeholder="Maiden Name" value={form.maidenName} onChange={set('maidenName')} />
+            </div>
+            <div className="field-wrapper">
+              <InputField icon={<UserIcon />} label="region" placeholder="Region" value={form.region} onChange={set('region')} />
             </div>
           </div>
         </section>
@@ -202,10 +282,16 @@ function Step1({ onNext, onBack }) {
             </div>
           </div>
 
-          <div className="fields-grid fields-2col">
+          <div className="fields-grid fields-3col">
             <div className="field-wrapper">
               <InputField icon={<CarIcon />} label="vehicleNumber" placeholder="Vehicle Number (e.g. MH01AB1234)" value={form.vehicleNumber} onChange={(e) => setForm(p => ({ ...p, vehicleNumber: e.target.value.toUpperCase() }))} maxLength={15} />
               {errors.vehicleNumber && <span className="field-error">{errors.vehicleNumber}</span>}
+            </div>
+            <div className="field-wrapper">
+              <SelectField icon={<TagIcon />} label="isCommercial" placeholder="Select Category" options={['Commercial', 'Non-Commercial']} value={form.isCommercial} onChange={set('isCommercial')} />
+            </div>
+            <div className="field-wrapper">
+              <SelectField icon={<CarIcon />} label="vehicleClass" placeholder="Vehicle Class" options={['VC-1', 'VC-2', 'VC-3', 'VC-4', 'VC-5', 'VC-6', 'VC-7', 'VC-8', 'VC-9', 'VC-12', 'VC-15', 'VC-16', 'VC-20']} value={form.vehicleClass} onChange={set('vehicleClass')} />
             </div>
             <div className="field-wrapper">
               <div className="input-group" style={{ position: 'relative' }}>
@@ -308,6 +394,8 @@ function Step1({ onNext, onBack }) {
           {errors.pan && <span className="field-error">{errors.pan}</span>}
           {errors.panFile && <span className="field-error">{errors.panFile}</span>}
         </section>
+
+
 
         {/* Action Buttons */}
         <div className="form-actions">
