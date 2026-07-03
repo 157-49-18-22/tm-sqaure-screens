@@ -77,6 +77,30 @@ function ApplicationModal({ appId, onClose, onRefresh }) {
           <div className="modal-section-title">Personal Details</div>
           <div className="modal-grid">
             <div className="modal-field">
+              <span>Title</span>
+              <strong>{app.title || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>First Name</span>
+              <strong>{app.firstName || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Middle Name</span>
+              <strong>{app.middleName || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Last Name</span>
+              <strong>{app.lastName || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Maiden Name</span>
+              <strong>{app.maidenName || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Region</span>
+              <strong>{app.region || '—'}</strong>
+            </div>
+            <div className="modal-field">
               <span>Name (as on PAN)</span>
               <strong>{app.panName || '—'}</strong>
             </div>
@@ -102,11 +126,19 @@ function ApplicationModal({ appId, onClose, onRefresh }) {
             </div>
             <div className="modal-field">
               <span>VC Type</span>
-              <strong>{app.vcCode || app.vcType || 'VC-4'}</strong>
+              <strong>{app.vcCode || app.vcType || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Vehicle Class</span>
+              <strong>{app.vehicleClass || '—'}</strong>
+            </div>
+            <div className="modal-field">
+              <span>Commercial / Non-Commercial</span>
+              <strong>{app.isCommercial || '—'}</strong>
             </div>
             <div className="modal-field">
               <span>Vehicle Type</span>
-              <strong>{app.vehicleType || 'Car, Jeep, Van'}</strong>
+              <strong>{app.vehicleType || '—'}</strong>
             </div>
             <div className="modal-field">
               <span>Owner Name</span>
@@ -147,10 +179,6 @@ function ApplicationModal({ appId, onClose, onRefresh }) {
             <div className="modal-field">
               <span>Barcode</span>
               <strong>{app.barcode || '—'}</strong>
-            </div>
-            <div className="modal-field">
-              <span>Vehicle Class</span>
-              <strong>{app.isCommercial || 'Non-Commercial'}</strong>
             </div>
           </div>
 
