@@ -61,6 +61,13 @@ async function initDB() {
         isCommercial VARCHAR(10),
         vcCode VARCHAR(10),
         vcType VARCHAR(100),
+        title VARCHAR(50),
+        firstName VARCHAR(100),
+        middleName VARCHAR(100),
+        lastName VARCHAR(100),
+        maidenName VARCHAR(100),
+        vehicleClass VARCHAR(100),
+        region VARCHAR(100),
         status VARCHAR(20) DEFAULT 'Pending',
         submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -174,21 +181,23 @@ app.post('/api/applications', upload.fields(fileFields), async (req, res) => {
       INSERT INTO applications (
         mobile, pan, panName, dob, vehicleType, vehicleNumber, vcType,
         chassisNumber, engineNumber, ownerName, fuelType, stateOfRegistration, pincode,
+        title, firstName, middleName, lastName, maidenName, vehicleClass, region,
         panFile, rcFront, rcBack, vehicleFront, vehicleSide, tagImage,
         city, color, vehicleDescriptor, barcode, isCommercial, vcCode
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
-    const values = [
-      b.mobile, b.pan, b.panName, b.dob,
-      b.vehicleType, b.vehicleNumber, b.vcType,
-      chassis, b.engineNumber, b.ownerName,
-      b.fuelType, b.stateOfRegistration, b.pincode,
-      base64Files.panFile, base64Files.rcFront, base64Files.rcBack,
-      base64Files.vehicleFront, base64Files.vehicleSide, base64Files.tagImage,
-      b.city || '', b.color || '', b.vehicleDescriptor || '',
-      b.barcode || '', b.isCommercial || '', b.vcCode || ''
-    ];
+  const values = [
+    b.mobile, b.pan, b.panName, b.dob,
+    b.vehicleType, b.vehicleNumber, b.vcType,
+    chassis, b.engineNumber, b.ownerName,
+    b.fuelType, b.stateOfRegistration, b.pincode,
+    b.title || '', b.firstName || '', b.middleName || '', b.lastName || '', b.maidenName || '', b.vehicleClass || '', b.region || '',
+    base64Files.panFile, base64Files.rcFront, base64Files.rcBack,
+    base64Files.vehicleFront, base64Files.vehicleSide, base64Files.tagImage,
+    b.city || '', b.color || '', b.vehicleDescriptor || '',
+    b.barcode || '', b.isCommercial || '', b.vcCode || ''
+  ];
 
     const [result] = await pool.query(q, values);
     res.json({ message: 'Saved!', id: result.insertId });
