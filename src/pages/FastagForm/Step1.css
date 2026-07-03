@@ -137,6 +137,7 @@
 }
 
 .fields-2col { grid-template-columns: 1fr 1fr; }
+.fields-3col { grid-template-columns: 1fr 1fr 1fr; }
 
 .field-wrapper { display: flex; flex-direction: column; gap: 4px; }
 
@@ -571,8 +572,8 @@
     font-size: 15px;
   }
 
-  /* Stack 2-col grids to single column */
-  .fields-2col {
+  /* Stack grids to single column */
+  .fields-2col, .fields-3col {
     grid-template-columns: 1fr;
   }
 
