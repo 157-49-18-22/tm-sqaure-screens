@@ -4,7 +4,6 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Login from './pages/FastagForm/Login';
 import Step1 from './pages/FastagForm/Step1';
 import Step2 from './pages/FastagForm/Step2';
-import Step3 from './pages/FastagForm/Step3';
 import './App.css';
 
 const pageTitles = {
@@ -12,7 +11,6 @@ const pageTitles = {
   login: 'Admin Login',
   step1: 'New FASTag — Step 1',
   step2: 'New FASTag — Step 2',
-  step3: 'New FASTag — Step 3',
 };
 
 function App() {
@@ -25,12 +23,7 @@ function App() {
     setActivePage('step2');
   };
 
-  const handleStep2Next = (data) => {
-    setFormData(prev => ({ ...prev, ...data }));
-    setActivePage('step3');
-  };
-
-  const handleStep3Submit = () => {
+  const handleStep2Submit = () => {
     setActivePage('step1');
     setFormData({});
   };
@@ -65,9 +58,7 @@ function App() {
       case 'step1':
         return <Step1 onNext={handleStep1Next} onBack={() => setActivePage('step1')} />;
       case 'step2':
-        return <Step2 formData={formData} onNext={handleStep2Next} onBack={() => setActivePage('step1')} />;
-      case 'step3':
-        return <Step3 formData={formData} onSubmit={handleStep3Submit} onBack={() => setActivePage('step2')} />;
+        return <Step2 formData={formData} onSubmit={handleStep2Submit} onBack={() => setActivePage('step1')} />;
       default:
         return <Step1 onNext={handleStep1Next} onBack={() => setActivePage('step1')} />;
     }
