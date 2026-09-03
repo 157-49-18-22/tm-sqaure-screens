@@ -186,12 +186,8 @@ function Step3({ formData, onSubmit, onBack }) {
   };
 
   const validate = () => {
-    const e = {};
-    uploads.forEach(u => {
-      if (!files[u.id]) e[u.id] = 'Required';
-    });
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleNext = async () => {
@@ -274,8 +270,8 @@ function Step3({ formData, onSubmit, onBack }) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           <span className="step-pill active">Step 3</span>
         </div>
-        <h1 className="form-page-title">Upload Documents</h1>
-        <p className="form-page-sub">Upload RC, vehicle photos and tag image to complete your application</p>
+        <h1 className="form-page-title">Upload Documents (Optional)</h1>
+        <p className="form-page-sub">Upload RC, vehicle photos and tag image (Optional)</p>
       </div>
 
       <div className="form-container">
@@ -291,7 +287,7 @@ function Step3({ formData, onSubmit, onBack }) {
               style={{ width: `${(uploadedCount / uploads.length) * 100}%` }}
             />
           </div>
-          <span className="upload-progress-label">{uploadedCount} / {uploads.length} uploaded</span>
+          <span className="upload-progress-label">{uploadedCount} / {uploads.length} uploaded (Optional)</span>
         </div>
 
         <section className="form-section animate-fadeInUp">
@@ -304,8 +300,8 @@ function Step3({ formData, onSubmit, onBack }) {
               </svg>
             </div>
             <div>
-              <h2 className="section-title">Document Uploads</h2>
-              <p className="section-sub">All 5 documents are required to proceed</p>
+              <h2 className="section-title">Document Uploads (Optional)</h2>
+              <p className="section-sub">Document uploads are optional — click Next to complete application</p>
             </div>
           </div>
 
