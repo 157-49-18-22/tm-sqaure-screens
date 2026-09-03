@@ -144,7 +144,6 @@ function Step1({ onNext, onBack }) {
     if (!form.panName) e.panName = 'Name is required';
     if (!form.dob) e.dob = 'Date of birth is required';
     if (!form.vehicleNumber) e.vehicleNumber = 'Vehicle number is required';
-    if (!panFile) e.panFile = 'PAN card upload is required';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -346,8 +345,8 @@ function Step1({ onNext, onBack }) {
               </svg>
             </div>
             <div>
-              <h2 className="section-title">Upload PAN Card</h2>
-              <p className="section-sub">Upload a clear image or PDF of your PAN card</p>
+              <h2 className="section-title">Upload PAN Card (Optional)</h2>
+              <p className="section-sub">Upload a clear image or PDF of your PAN card (Optional)</p>
             </div>
           </div>
 
