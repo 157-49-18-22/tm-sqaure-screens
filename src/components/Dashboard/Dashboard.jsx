@@ -182,28 +182,32 @@ function ApplicationModal({ appId, onClose, onRefresh }) {
             </div>
           </div>
 
-          <div className="modal-section-title">Uploaded Documents</div>
-          <div className="modal-images-grid">
-            {images.map((img, i) => (
-              <div key={i} className="modal-image-card">
-                <span className="modal-image-label">{img.label}</span>
-                {img.file ? (
-                   img.file.startsWith('data:application/pdf') ? (
-                     <div className="modal-pdf-box">
-                        <div>📄</div>
-                        <a href={img.file} download={`${img.label}.pdf`} target="_blank" rel="noreferrer">Open PDF</a>
-                     </div>
-                   ) : (
-                     <a href={img.file} target="_blank" rel="noreferrer">
-                       <img src={img.file} alt={img.label} className="modal-doc-img" />
-                     </a>
-                   )
-                 ) : (
-                   <div className="modal-no-doc">No Document</div>
-                )}
+          {images.some(img => img.file) && (
+            <>
+              <div className="modal-section-title">Uploaded Documents</div>
+              <div className="modal-images-grid">
+                {images.map((img, i) => (
+                  <div key={i} className="modal-image-card">
+                    <span className="modal-image-label">{img.label}</span>
+                    {img.file ? (
+                       img.file.startsWith('data:application/pdf') ? (
+                         <div className="modal-pdf-box">
+                            <div>📄</div>
+                            <a href={img.file} download={`${img.label}.pdf`} target="_blank" rel="noreferrer">Open PDF</a>
+                         </div>
+                       ) : (
+                         <a href={img.file} target="_blank" rel="noreferrer">
+                           <img src={img.file} alt={img.label} className="modal-doc-img" />
+                         </a>
+                       )
+                     ) : (
+                       <div className="modal-no-doc">No Document</div>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
 
           {(!app.status || app.status === 'Pending') && (
             <div className="modal-actions-wrapper">
