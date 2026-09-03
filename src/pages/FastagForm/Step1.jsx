@@ -90,52 +90,10 @@ function Step1({ onNext, onBack }) {
     chassisNumber: '',
     isCommercial: '',
   });
-  const [panFile, setPanFile] = useState(null);
-  const [panPreview, setPanPreview] = useState(null);
-  const [docs, setDocs] = useState({ doc1: null, doc2: null, doc3: null, doc4: null });
-  const [docPreviews, setDocPreviews] = useState({ doc1: null, doc2: null, doc3: null, doc4: null });
-  const doc1Ref = useRef();
-  const doc2Ref = useRef();
-  const doc3Ref = useRef();
-  const doc4Ref = useRef();
-
   const [errors, setErrors] = useState({});
-  const [dragOver, setDragOver] = useState(false);
   const [copied, setCopied] = useState(false);
-  const fileRef = useRef();
 
   const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
-
-  const handleFile = (file) => {
-    if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(file.type)) {
-      setErrors(prev => ({ ...prev, pan: 'Only JPG, PNG or PDF allowed' }));
-      return;
-    }
-    setPanFile(file);
-    setErrors(prev => ({ ...prev, pan: '' }));
-    if (file.type !== 'application/pdf') {
-      const reader = new FileReader();
-      reader.onload = (e) => setPanPreview(e.target.result);
-      reader.readAsDataURL(file);
-    } else {
-      setPanPreview('pdf');
-    }
-  };
-
-  const handleDocFile = (file, docId) => {
-    if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'].includes(file.type)) return;
-    
-    setDocs(prev => ({ ...prev, [docId]: file }));
-    if (file.type !== 'application/pdf') {
-      const reader = new FileReader();
-      reader.onload = (e) => setDocPreviews(prev => ({ ...prev, [docId]: e.target.result }));
-      reader.readAsDataURL(file);
-    } else {
-      setDocPreviews(prev => ({ ...prev, [docId]: 'pdf' }));
-    }
-  };
 
   const validate = () => {
     const e = {};
@@ -149,7 +107,7 @@ function Step1({ onNext, onBack }) {
   };
 
   const handleNext = () => {
-    if (validate()) onNext({ ...form, panFile, ...docs });
+    if (validate()) onNext(form);
   };
 
   const PhoneIcon = () => (
@@ -333,68 +291,6 @@ function Step1({ onNext, onBack }) {
             </div>
           </div>
         </section>
-
-        <div className="section-divider" />
-
-        {/* ── SECTION 3 : Upload PAN Card ── */}
-        <section className="form-section animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-          <div className="section-header">
-            <div className="section-icon amber">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
-            </div>
-            <div>
-              <h2 className="section-title">Upload PAN Card (Optional)</h2>
-              <p className="section-sub">Upload a clear image or PDF of your PAN card (Optional)</p>
-            </div>
-          </div>
-
-          <div
-            className={`upload-zone ${dragOver ? 'drag-over' : ''} ${panFile ? 'has-file' : ''}`}
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); }}
-            onClick={() => fileRef.current.click()}
-          >
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/jpeg,image/png,image/jpg,application/pdf"
-              style={{ display: 'none' }}
-              onChange={(e) => handleFile(e.target.files[0])}
-            />
-
-            {panPreview && panPreview !== 'pdf' ? (
-              <div className="preview-wrap">
-                <img src={panPreview} alt="PAN Card Preview" className="pan-preview-img" />
-                <div className="preview-overlay">
-                  <p>Click to change</p>
-                </div>
-              </div>
-            ) : panPreview === 'pdf' ? (
-              <div className="pdf-preview">
-                <div className="pdf-icon">📄</div>
-                <p className="pdf-name">{panFile?.name}</p>
-                <span className="pdf-badge">PDF</span>
-              </div>
-            ) : (
-              <div className="upload-placeholder">
-                <div className="upload-icon-wrap">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                </div>
-                <p className="upload-title">Drag &amp; drop or <span>browse files</span></p>
-                <p className="upload-sub">Supports JPG, PNG and PDF — max 5MB</p>
-              </div>
-            )}
-          </div>
-          {errors.pan && <span className="field-error">{errors.pan}</span>}
-          {errors.panFile && <span className="field-error">{errors.panFile}</span>}
-        </section>
-
-
 
         {/* Action Buttons */}
         <div className="form-actions">
